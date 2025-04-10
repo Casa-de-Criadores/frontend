@@ -1,0 +1,64 @@
+# Dependencies
+node_modules/
+.next/
+out/
+
+# Build files
+dist/
+build/
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Local environment files
+.env*.local
+.env
+.env.development
+.env.production
+.env.test
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+
+# System Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Testing
+coverage/
+.nyc_output/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Optional pnpm store directory
+.pnpm-store/
+
+# Next.js
+.next/
+.next/cache/
+
+# Production
+.next/static/chunks/webpack-*.js
+
+# Debug
+.next/static/chunks/*.js.map
+.next/static/css/*.css.map
