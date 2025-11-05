@@ -1,11 +1,9 @@
 // app/brand/[slug]/page.tsx
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import Link from 'next/link';
-import { apiGet } from '@/lib/api-client';
+import { fetchFromApi } from '@/lib/api-client';
 import { Brand } from '@/types/brand';
-import { Product, ProductCategory } from '@/types/product';
-import { formatPrice, getLocalizedText } from '@/lib/utils';
+import { Product } from '@/types/product';
 import ProductGrid from '@/components/ProductGrid';
 import type { Metadata } from 'next';
 
@@ -15,10 +13,9 @@ interface PageProps {
     };
 }
 
-// Generate metadata for SEO
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     try {
-        const brand = await apiGet<Brand>(`/brand/slug/${params.slug}`);
+        const brand = await fetchFromApi<Brand>(`/brand/slug/${params.slug}`);
 
         return {
             title: `${brand.title} | Casa de Criadores Marketplace`,
@@ -39,7 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 async function getBrandData(slug: string): Promise<{ brand: Brand; products: Product[] }> {
     try {
         // Fetch brand by slug
-        const brand = await apiGet<Brand>(`/brand/slug/${slug}`);
+        const brand = await fetchFromApi<Brand>(`/brand/slug/${slug}`);
 
         // Only show active brands publicly
         if (brand.status !== 'active') {
@@ -47,7 +44,7 @@ async function getBrandData(slug: string): Promise<{ brand: Brand; products: Pro
         }
 
         // Fetch products for this brand
-        const products = await apiGet<Product[]>(`/product?brandId=${brand.id}`);
+        const products = await fetchFromApi<Product[]>(`/product?brandId=${brand.id}`);
 
         // Filter out unavailable products
         const availableProducts = products.filter(p => p.isAvailable !== false);

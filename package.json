@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "summoncircus": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && deno task start",
+    "dev:frontend": "cd frontend && npm run dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

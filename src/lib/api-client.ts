@@ -1,22 +1,29 @@
 // lib/api-client.ts
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:48128';
 
-class ApiError extends Error {
+/**
+ * Custom error class for API-related failures
+ */
+export class ApiError extends Error {
     constructor(
         message: string,
-        public status: number,
-        public data?: any
+        public readonly status: number,
+        public readonly data?: Record<string, unknown>
     ) {
         super(message);
         this.name = 'ApiError';
     }
 }
 
-async function handleResponse<T>(response: Response): Promise<T> {
+/**
+ * Handle fetch response and extract typed data or throw ApiError
+ */
+async function handleResponse<TResponse>(response: Response): Promise<TResponse> {
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        const errorData = await response.json().catch(() => ({})) as Record<string, unknown>;
         throw new ApiError(
-            errorData.message || `API Error: ${response.status}`,
+            (errorData.message as string) || `API Error: ${response.status}`,
             response.status,
             errorData
         );
@@ -24,13 +31,23 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
     const contentType = response.headers.get('content-type');
     if (contentType?.includes('application/json')) {
-        return response.json();
+        return response.json() as Promise<TResponse>;
     }
 
-    return response.text() as any;
+    // For non-JSON responses, return text (caller should handle type assertion)
+    return response.text() as Promise<TResponse>;
 }
 
-export async function apiGet<T>(path: string, options?: RequestInit): Promise<T> {
+/**
+ * Perform a GET request to the API
+ * @param path - API endpoint path (e.g., '/brand/slug/studio-aurelia')
+ * @param options - Additional fetch options
+ * @returns Typed response data
+ */
+export async function fetchFromApi<TResponse>(
+    path: string,
+    options?: RequestInit
+): Promise<TResponse> {
     const response = await fetch(`${API_BASE_URL}${path}`, {
         ...options,
         method: 'GET',
@@ -40,14 +57,21 @@ export async function apiGet<T>(path: string, options?: RequestInit): Promise<T>
         },
     });
 
-    return handleResponse<T>(response);
+    return handleResponse<TResponse>(response);
 }
 
-export async function apiPost<T>(
+/**
+ * Perform a POST request to the API
+ * @param path - API endpoint path
+ * @param data - Request body data
+ * @param options - Additional fetch options
+ * @returns Typed response data
+ */
+export async function postToApi<TResponse, TPayload = Record<string, unknown>>(
     path: string,
-    data?: any,
+    data?: TPayload,
     options?: RequestInit
-): Promise<T> {
+): Promise<TResponse> {
     const response = await fetch(`${API_BASE_URL}${path}`, {
         ...options,
         method: 'POST',
@@ -58,14 +82,21 @@ export async function apiPost<T>(
         body: data ? JSON.stringify(data) : undefined,
     });
 
-    return handleResponse<T>(response);
+    return handleResponse<TResponse>(response);
 }
 
-export async function apiPut<T>(
+/**
+ * Perform a PUT request to the API
+ * @param path - API endpoint path
+ * @param data - Request body data
+ * @param options - Additional fetch options
+ * @returns Typed response data
+ */
+export async function updateInApi<TResponse, TPayload = Record<string, unknown>>(
     path: string,
-    data?: any,
+    data?: TPayload,
     options?: RequestInit
-): Promise<T> {
+): Promise<TResponse> {
     const response = await fetch(`${API_BASE_URL}${path}`, {
         ...options,
         method: 'PUT',
@@ -76,10 +107,19 @@ export async function apiPut<T>(
         body: data ? JSON.stringify(data) : undefined,
     });
 
-    return handleResponse<T>(response);
+    return handleResponse<TResponse>(response);
 }
 
-export async function apiDelete<T>(path: string, options?: RequestInit): Promise<T> {
+/**
+ * Perform a DELETE request to the API
+ * @param path - API endpoint path
+ * @param options - Additional fetch options
+ * @returns Typed response data
+ */
+export async function deleteFromApi<TResponse = void>(
+    path: string,
+    options?: RequestInit
+): Promise<TResponse> {
     const response = await fetch(`${API_BASE_URL}${path}`, {
         ...options,
         method: 'DELETE',
@@ -89,8 +129,5 @@ export async function apiDelete<T>(path: string, options?: RequestInit): Promise
         },
     });
 
-    return handleResponse<T>(response);
+    return handleResponse<TResponse>(response);
 }
-
-// Export the error class for error handling in components
-export { ApiError };

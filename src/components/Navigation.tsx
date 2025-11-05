@@ -6,7 +6,7 @@ export default function Navigation() {
         <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-sm border-b border-black/10 z-50">
             <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                 <Link
-                    href="/frontend/public"
+                    href="/"
                     className="flex items-center gap-3 hover:opacity-60 transition-opacity"
                 >
                     <div className="font-bold text-xl tracking-tight">CASA DE CRIADORES</div>
@@ -15,7 +15,7 @@ export default function Navigation() {
 
                 <div className="flex gap-6 items-center">
                     <Link
-                        href="/brands"
+                        href="/brand"
                         className="text-sm hover:opacity-60 transition-opacity hidden sm:block"
                     >
                         Marcas
