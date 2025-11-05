@@ -61,4 +61,4 @@ coverage/
 
 # Debug
 .next/static/chunks/*.js.map
-.next/static/css/*.css.map
+.next/static/css/*.css.map.next/
